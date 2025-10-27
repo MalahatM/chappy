@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    console.log("🔍 Fetching user profiles from DynamoDB...");
+    console.log(" Fetching user profiles from DynamoDB...");
 
     const command = new ScanCommand({
       TableName: "chappy",
@@ -19,11 +19,9 @@ router.get("/", async (req, res) => {
     });
 
     const result = await db.send(command);
-    console.log("📊 Filtered user profiles:", JSON.stringify(result.Items, null, 2));
-
     res.json(result.Items);
   } catch (error) {
-    console.error("❌ Error fetching user profiles:", error);
+    console.error(" Error fetching user profiles:", error);
     res.status(500).json({
       error: "Failed to fetch user profiles",
       details: error instanceof Error ? error.message : error,
@@ -31,7 +29,39 @@ router.get("/", async (req, res) => {
   }
 });
 
+//post method to create a new user
 
 
+router.post("/", async (req, res) => {
+
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const newUser = {
+      pk: `USER#${username}`,
+      sk: `PROFILE#${username}`,
+      username,
+      email,
+      password,
+    };
+
+    const command = new PutCommand({
+      TableName: "chappy",
+      Item: newUser,
+    });
+
+    await db.send(command);
+    console.log(" New user created:", newUser);
+
+    res.status(201).json({ message: "User created successfully", user: newUser });
+  } catch (error) {
+    console.error(" Error creating user:", error);
+    res.status(500).json({ error: "Failed to create user" });
+  }
+});
 
 export default router;

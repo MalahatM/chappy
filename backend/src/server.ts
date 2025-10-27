@@ -13,7 +13,7 @@ import express from "express";
 
 
      app.use("/api/users", users);
-     console.log("✅ Users route loaded"); 
+     console.log("Users route loaded"); 
      app.use("/api/channels", channels);
      app.use("/api/messages", messages);
      app.use("/api/auth", auth); 
@@ -25,7 +25,7 @@ import express from "express";
      });
 
      const PORT = process.env.PORT || 3000;
-     console.log("🔄 Server starting...");
+     console.log(" Server starting...");
      app.listen(PORT, () => {
        console.log(` Server is running on http://localhost:${PORT}`);
      });
