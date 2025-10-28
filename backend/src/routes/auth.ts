@@ -6,11 +6,11 @@ const router = express.Router();
 
 // LOGIN route
 router.post("/login", async (req, res) => {
-  console.log("📩 Received POST /api/auth/login request");
+  console.log("Received POST /api/auth/login request");
 
   try {
     const { username, password } = req.body;
-
+// Validate input
     if (!username || !password) {
       return res.status(400).json({ error: "Username and password are required" });
     }
@@ -25,20 +25,20 @@ router.post("/login", async (req, res) => {
     });
 
     const result = await db.send(command);
-
+// Check if user exists
     if (!result.Item) {
       console.log(" User not found:", username);
       return res.status(404).json({ error: "User not found" });
     }
 
-
+// Check password 
     if (result.Item.password !== password) {
       console.log(" Wrong password for user:", username);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     console.log(" Login successful for user:", username);
-
+// Respond with user info
     res.json({
       message: "Login successful",
       user: {
@@ -46,6 +46,7 @@ router.post("/login", async (req, res) => {
         email: result.Item.email,
       },
     });
+	// Handle errors
   } catch (error) {
     console.error(" Error in login:", error);
     res.status(500).json({ error: "Internal server error" });
